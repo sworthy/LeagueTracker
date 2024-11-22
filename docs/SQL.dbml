@@ -1,0 +1,154 @@
+Table Summoners {
+    SummonerID int [pk, increment, note: "Internal unique identifier"]
+    PUUID varchar [unique, not null, note: "Unique identifier from API"]
+    SummonerName varchar [not null, note: "Player's in-game username"]
+    ProfileIcon int [note: "Profile icon ID from API"]
+    Level int [not null, note: "Summoner level"]
+    LocationID int [ref: > Location.LocationID, note: "Geographical location"]
+}
+
+Table Location {
+    LocationID int [pk, increment, note: "Unique Identifier for location"]
+    Name varchar [note: "Location Name"]
+    Abbreviation varchar [note: "Abbreviation (e.g., NA, EU, BR)"]
+}
+
+Table LeagueRank {
+    LeagueRankID int [pk, increment, note: "Unique identifier for league rank"]
+    SummonerID int [ref: > Summoners.SummonerID, note: "References Summoner"]
+    LeagueID int [ref: > League.LeagueID, note: "References League"]
+    QueueID int [ref: > Queue.QueueID, note: "References Queue"]
+    Rank varchar [note: "Rank (e.g., Gold, Platinum)"]
+    LeaguePoints int [note: "Points in current rank"]
+    Wins int [note: "Number of wins"]
+    Losses int [note: "Number of losses"]
+    Veteran boolean [note: "Indicates if the summoner is a veteran"]
+    FreshBlood boolean [note: "Indicates if the summoner is new to the division"]
+    HotStreak boolean [note: "Indicates if the summoner is on a hot streak"]
+    Inactive boolean [note: "Indicates if the summoner is inactive"]
+}
+
+Table League {
+    LeagueID int [pk, note: "Unique identifier from API"]
+    QueueID int [ref: > Queue.QueueID, note: "References the Queue table"]
+    LocationID int [ref: > Location.LocationID, note: "References the Location table"]
+    Name varchar [note: "League name"]
+    Division varchar [note: "Division within the league"]
+    StartDate date [note: "Start date of the league division"]
+    EndDate date [note: "End date of the league division"]
+}
+
+Table Queue {
+    QueueID int [pk, increment, note: "Unique identifier for queue"]
+    Name varchar [note: "Name of the queue (e.g., Ranked Solo)"]
+    Description varchar [note: "Additional context for the queue"]
+}
+
+Table Matches {
+    MatchID bigint [pk, note: "Unique identifier for the match"]
+    GameMode varchar [note: "Type of the game (e.g., CLASSIC)"]
+    GameType varchar [note: "Matchmaking type (e.g., MATCHED_GAME)"]
+    GameCreation timestamp [note: "When the match was created"]
+    GameStart timestamp [note: "When the match started"]
+    GameEnd timestamp [note: "When the match ended"]
+    GameDuration int [note: "Total match duration in seconds"]
+    MapID int [ref: > Maps.MapID, note: "References the Maps table"]
+    GameVersion varchar [note: "Game version during the match"]
+    QueueID int [ref: > Queue.QueueID, note: "References the Queue table"]
+    EndOfGameResult varchar [note: "Final match result (e.g., GameComplete)"]
+}
+
+
+Table Teams {
+    TeamID int [pk, note: "Unique identifier for the team in a match (e.g., 100 or 200)"]
+    MatchID bigint [ref: > Matches.MatchID, note: "References the Matches table"]
+    Win boolean [note: "Whether the team won the match"]
+    FirstBlood boolean [note: "Whether the team achieved first blood"]
+    FirstTower boolean [note: "Whether the team destroyed the first tower"]
+    TeamPosition varchar [note: "Position of the team (e.g., Red or Blue)"]
+}
+
+Table TeamObjectives {
+    ObjectiveID int [pk, increment, note: "Unique identifier for the objective record"]
+    TeamID int [ref: > Teams.TeamID, note: "References the Teams table"]
+    ObjectiveType varchar [note: "Type of objective (e.g., Baron, Dragon, Tower)"]
+    Kills int [note: "Number of times this objective was achieved by the team"]
+    First boolean [note: "Whether the team achieved the first of this objective"]
+    ObjectiveValue varchar [note: "Additional metadata for objectives (e.g., dragon type)"]
+
+}
+
+Table TeamBans {
+    BanID int [pk, increment, note: "Unique identifier for the ban record"]
+    TeamID int [ref: > Teams.TeamID, note: "References the Teams table"]
+    ChampionID int [ref: > Champions.ChampionID, note: "References the Champions table"]
+    PickTurn int [note: "The pick turn when the ban was made"]
+}
+
+
+Table Players {
+    PlayerID int [pk, increment, note: "Unique identifier for the participant"]
+    MatchID bigint [ref: > Matches.MatchID, note: "References the Matches table"]
+    SummonerID int [ref: > Summoners.SummonerID, note: "Unique identifier for the player"]
+    TeamID int [ref: > Teams.TeamID, note: "References the Teams table"]
+    ChampionID int [ref: > Champions.ChampionID, note: "Champion played during the match"]
+    TeamPosition varchar [note: "Lane or position played (e.g., TOP, MID)"]
+    Role varchar [note: "Specific role (e.g., CARRY, JUNGLE)"]
+    Win boolean [note: "Whether the player’s team won the match"]
+    SummonerSpell1ID int [note: "First summoner spell used"]
+    SummonerSpell2ID int [note: "Second summoner spell used"]
+    ProfileIcon int [note: "Player’s profile icon"]
+    IndividualPosition varchar [note: "Player’s individual position"]
+}
+
+Table PlayerItems {
+    PlayerItemID int [pk, increment, note: "Unique identifier for player-item relation"]
+    PlayerID int [ref: > Players.PlayerID, note: "References the Players table"]
+    ItemID int [ref: > Items.ItemID, note: "References the Items table"]
+    Slot int [note: "Item slot number (0 to 6)"]
+}
+
+
+Table Performance {
+    PerformanceID int [pk, increment, note: "Unique identifier for performance record"]
+    PlayerID int [ref: > Players.PlayerID, note: "References the Players table"]
+    Kills int [default: 0, note: "Number of kills"]
+    Deaths int [default: 0, note: "Number of deaths"]
+    Assists int [default: 0, note: "Number of assists"]
+    TotalDamageDealt int [note: "Total damage dealt"]
+    TotalDamageTaken int [note: "Total damage taken"]
+    VisionScore int [note: "Vision contribution score"]
+    GoldEarned int [note: "Total gold earned by the player"]
+    TurretsDestroyed int [default: 0, note: "Number of turrets destroyed"]
+    WardsPlaced int [default: 0, note: "Number of wards placed"]
+    WardsKilled int [default: 0, note: "Number of wards killed"]
+    MinionsKilled int [default: 0, note: "Number of minions killed"]
+    NeutralMinionsKilled int [default: 0, note: "Number of neutral creeps killed"]
+    DamageToChampionsMagic int [note: "Magic damage dealt to champions"]
+    DamageToChampionsPhysical int [note: "Physical damage dealt to champions"]
+    DamageToChampionsTrue int [note: "True damage dealt to champions"]
+}
+
+Table Champions {
+    ChampionID int [pk, increment, note: "Unique identifier for champions"]
+    Version varchar [note: "Version of champion"]
+    Name varchar [note: "Champion's name"]
+    Title varchar [note: "Champion's title"]
+}
+
+Table Items {
+  ItemID int [pk, increment, note: "Unique identifier for items"]
+  Version varchar [note: "Version of the item"]
+  Name varchar [note: "Item Name"]
+}
+
+Table Maps {
+    MapID int [pk, increment, note: "Unique Identifier for Maps"]
+    Name varchar [note: "Name of map"]
+}
+
+Table Versions {
+    VersionID int [pk, increment, note: "Unique identifier for game version"]
+    Version varchar [note: "Game version (e.g., 12.19.1)"]
+    ReleaseDate date [note: "Release date of the version"]
+}

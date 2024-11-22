@@ -1,0 +1,154 @@
+Table SummonerProfiles {
+    SummonerID uuid [pk, note: "Unique identifier for the summoner"]
+    PUUID text [note: "Unique identifier from API"]
+    SummonerName text [note: "Player's in-game username"]
+    ProfileIcon int [note: "Profile icon ID from API"]
+    Level int [note: "Summoner level"]
+    Location text [note: "Geographical location"]
+}
+
+Table LeagueRankings {
+    SummonerID uuid [note: "References SummonerProfiles"]
+    QueueID text [note: "Queue type"]
+    LeagueID text [note: "League identifier"]
+    Rank text [note: "Rank (e.g., Gold, Platinum)"]
+    LeaguePoints int [note: "Points in the current rank"]
+    Wins int [note: "Number of wins"]
+    Losses int [note: "Number of losses"]
+    Veteran boolean [note: "Indicates if the player is a veteran"]
+    FreshBlood boolean [note: "Indicates if the player is new to the division"]
+    HotStreak boolean [note: "Indicates if the player is on a hot streak"]
+    Inactive boolean [note: "Indicates if the player is inactive"]
+
+    indexes {
+        (SummonerID, QueueID, LeagueID) [pk] // Composite Primary Key
+    }
+}
+
+Table Matches {
+    MatchID uuid [pk, note: "Unique identifier for the match"]
+    GameMode text [note: "Type of the game (e.g., CLASSIC)"]
+    GameType text [note: "Matchmaking type (e.g., MATCHED_GAME)"]
+    GameCreation timestamp [note: "When the match was created"]
+    GameStart timestamp [note: "When the match started"]
+    GameEnd timestamp [note: "When the match ended"]
+    GameDuration int [note: "Total match duration in seconds"]
+    MapID uuid [note: "Identifier for the game map"]
+    GameVersion text [note: "Game version during the match"]
+    QueueID text [note: "References the queue type"]
+    EndOfGameResult text [note: "Final match result (e.g., GameComplete)"]
+}
+
+Table MatchTeams {
+    MatchID uuid [note: "References Matches"]
+    TeamID int [note: "Team identifier (e.g., 100 or 200)"]
+    Win boolean [note: "Whether the team won the match"]
+    FirstBlood boolean [note: "Whether the team achieved first blood"]
+    FirstTower boolean [note: "Whether the team destroyed the first tower"]
+    TeamPosition text [note: "Position of the team (e.g., Red or Blue)"]
+
+    indexes {
+        (MatchID, TeamID) [pk] // Composite Primary Key
+    }
+}
+
+Table TeamObjectives {
+    MatchID uuid [note: "References Matches"]
+    TeamID int [note: "References MatchTeams"]
+    ObjectiveType text [note: "Type of objective (e.g., Baron, Dragon, Tower)"]
+    Kills int [note: "Number of times this objective was achieved by the team"]
+    First boolean [note: "Whether the team achieved the first of this objective"]
+    ObjectiveValue text [note: "Additional metadata for objectives (e.g., dragon type)"]
+
+    indexes {
+        (MatchID, TeamID, ObjectiveType) [pk] // Composite Primary Key
+    }
+}
+
+Table TeamBans {
+    MatchID uuid [note: "References Matches"]
+    TeamID int [note: "References MatchTeams"]
+    PickTurn int [note: "The pick turn when the ban was made"]
+    ChampionID uuid [note: "References Champions"]
+
+    indexes {
+        (MatchID, TeamID, PickTurn) [pk] // Composite Primary Key
+    }
+}
+
+Table MatchParticipants {
+    MatchID uuid [note: "References Matches"]
+    SummonerID uuid [note: "References SummonerProfiles"]
+    TeamID int [note: "References MatchTeams"]
+    ChampionID uuid [note: "Champion played during the match"]
+    Role text [note: "Specific role (e.g., CARRY, JUNGLE)"]
+    TeamPosition text [note: "Lane or position played (e.g., TOP, MID)"]
+    IndividualPosition text [note: "Player’s individual position"]
+    Win boolean [note: "Whether the player’s team won the match"]
+    SummonerSpell1ID int [note: "First summoner spell used"]
+    SummonerSpell2ID int [note: "Second summoner spell used"]
+    ProfileIcon int [note: "Player’s profile icon"]
+
+    indexes {
+        (MatchID, SummonerID) [pk] // Composite Primary Key
+    }
+}
+
+Table PlayerPerformance {
+    MatchID uuid [note: "References Matches"]
+    SummonerID uuid [note: "References SummonerProfiles"]
+    Kills int [note: "Number of kills"]
+    Deaths int [note: "Number of deaths"]
+    Assists int [note: "Number of assists"]
+    TotalDamageDealt int [note: "Total damage dealt"]
+    TotalDamageTaken int [note: "Total damage taken"]
+    VisionScore int [note: "Vision contribution score"]
+    GoldEarned int [note: "Total gold earned by the player"]
+    TurretsDestroyed int [note: "Number of turrets destroyed"]
+    WardsPlaced int [note: "Number of wards placed"]
+    WardsKilled int [note: "Number of wards killed"]
+    MinionsKilled int [note: "Number of minions killed"]
+    NeutralMinionsKilled int [note: "Number of neutral creeps killed"]
+    DamageToChampionsMagic int [note: "Magic damage dealt to champions"]
+    DamageToChampionsPhysical int [note: "Physical damage dealt to champions"]
+    DamageToChampionsTrue int [note: "True damage dealt to champions"]
+
+    indexes {
+        (MatchID, SummonerID) [pk] // Composite Primary Key
+    }
+}
+
+Table PlayerItems {
+    MatchID uuid [note: "References Matches"]
+    SummonerID uuid [note: "References SummonerProfiles"]
+    Slot int [note: "Item slot number (0 to 6)"]
+    ItemID uuid [note: "References Items"]
+
+    indexes {
+        (MatchID, SummonerID, Slot) [pk] // Composite Primary Key
+    }
+}
+
+Table Champions {
+    ChampionID uuid [pk, note: "Unique identifier for champions"]
+    Version text [note: "Version of champion"]
+    Name text [note: "Champion's name"]
+    Title text [note: "Champion's title"]
+}
+
+Table Items {
+    ItemID uuid [pk, note: "Unique identifier for items"]
+    Version text [note: "Version of the item"]
+    Name text [note: "Item name"]
+}
+
+Table Maps {
+    MapID uuid [pk, note: "Unique identifier for maps"]
+    Name text [note: "Name of map"]
+}
+
+Table GameVersions {
+    VersionID uuid [pk, note: "Unique identifier for game version"]
+    Version text [note: "Game version (e.g., 12.19.1)"]
+    ReleaseDate date [note: "Release date of the version"]
+}
