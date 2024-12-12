@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    env_file:
+      - ../.env  # Path relative to docker-compose.yml
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql_init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    env_file:
+      - ../.env  # Path relative to docker-compose.yml
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: "LeagueStatsTracker"
+      CASSANDRA_DC: "datacenter1"
+      CASSANDRA_RACK: "rack1"
+      CASSANDRA_USER: ${CASSANDRA_USER}
+      CASSANDRA_PASSWORD: ${CASSANDRA_PASSWORD}
+
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+
+  cassandra-load-keyspace:
+    container_name: cassandra-load-keyspace
+    image: cassandra:latest
+    depends_on:
+      - cassandra
+    volumes:
+      - ./cql_init:/cql_init
+    command: >
+      /bin/bash /cql_init/init.sh
+
+volumes:
+  postgres_data:
+  cassandra_data:

@@ -1,0 +1,10 @@
+README.md
+setup.py
+LeagueTracker.egg-info/PKG-INFO
+LeagueTracker.egg-info/SOURCES.txt
+LeagueTracker.egg-info/dependency_links.txt
+LeagueTracker.egg-info/entry_points.txt
+LeagueTracker.egg-info/requires.txt
+LeagueTracker.egg-info/top_level.txt
+python/__init__.py
+python/config.py

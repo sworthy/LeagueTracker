@@ -1,0 +1,3 @@
+CREATE DATABASE "LeagueTracker";
+CREATE DATABASE "GameAnalytics";
+CREATE DATABASE "Logging";

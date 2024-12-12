@@ -1,0 +1,2 @@
+[console_scripts]
+leaguetracker = python.__main__:main

@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: LeagueTracker
+Version: 0.1
+Requires-Python: >=3.8
+Requires-Dist: requests
+Requires-Dist: python-dotenv
+Requires-Dist: psycopg2
+Requires-Dist: cassandra-driver

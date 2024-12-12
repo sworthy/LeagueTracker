@@ -45,11 +45,11 @@ This project uses Docker to simplify the setup of local PostgreSQL and Cassandra
 - Docker installed on your system. [Get Docker](https://docs.docker.com/get-docker/)
 
 ### Running the Services
-1. Navigate to the folder containing the `docker-compose.yml` file.
+1. Navigate to the `Docker/` folder:
 2. Run the following command to start both PostgreSQL and Cassandra:
    ```bash
    docker-compose up -d
-
+   ```
 ---
 
 ### Contact
