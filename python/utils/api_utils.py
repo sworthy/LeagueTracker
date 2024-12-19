@@ -17,7 +17,7 @@ def get_url(endpoint_key, **kwargs):
     return url_template.format(**kwargs)
 
 
-def test_endpoint(url, params=None):
+def call_endpoint(url, params=None):
     api_key = os.getenv("RIOT_API_KEY")
     if not api_key:
         print("Error: RIOT_API_KEY is missing. Ensure it's set in the .env file.")
@@ -26,18 +26,17 @@ def test_endpoint(url, params=None):
         )
         return None
 
-    if api_key:
-        headers = {"X-Riot-Token": api_key}
-        try:
-            response = requests.get(url, headers=headers, params=params)
-            response.raise_for_status()
-            logger.info(f"API call to {response.url} successful.")
-            return response.json()
-        except requests.exceptions.HTTPError as e:
-            logger.error(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
-            print(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
+    headers = {"X-Riot-Token": api_key}
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        logger.info(f"API call to {response.url} successful.")
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
+        print(f"HTTP Error: {e.response.status_code} - {e.response.reason}")
 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Request Error: {e}")
-            print(f"Request Error: {e}")
-        return None
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request Error: {e}")
+        print(f"Request Error: {e}")
+    return None
